@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  web:
+    build: ./app
+    command: bash -c 'npm install -g; npm start'
+    volumes:
+      - ./app:/usr/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    links:
+      - "mongo:database"
+    environment:
+      - PORT=3000
+      - DATABASE_URL=database:27017
+      - DATABASE_USER=user
+      - DATABASE_PASS=password
+      - DATABASE_NAME=testingdb
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: testingdb
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - "./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro"
+
